@@ -38,7 +38,7 @@ def mock_bot():
 
 @pytest.fixture
 def bot():
-    return Bot()
+    return Bot(token='1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij')
 
 def test_bot_initialization(bot):
     assert bot is not None
