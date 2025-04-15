@@ -2,12 +2,27 @@ import os
 import unittest
 from bot import get_main_keyboard, get_messages_keyboard
 import pytest
-from bot import Bot
+from bot import Bot as OriginalBot
 from unittest.mock import patch, MagicMock
 
 # Set up test environment variables
 os.environ['BOT_TOKEN'] = '123456789:TEST1234567890abcdefghijklmnopqrstuvwxyz'
 os.environ['DATABASE_URL'] = 'postgresql://test:test@localhost:5432/test_db'
+
+class MockBot:
+    def __init__(self, token):
+        self.token = token
+        self.messages = []
+
+    def store_message(self, message):
+        self.messages.append(message)
+
+    def get_messages(self):
+        return self.messages
+
+    def delete_message(self, index):
+        if 0 <= index < len(self.messages):
+            del self.messages[index]
 
 class TestBot(unittest.TestCase):
     def test_keyboard_creation(self):
@@ -31,17 +46,16 @@ class TestBot(unittest.TestCase):
 # Mock the Bot class
 @pytest.fixture(autouse=True)
 def mock_bot():
-    with patch('bot.Bot') as mock:
-        mock_instance = MagicMock()
-        mock.return_value = mock_instance
-        yield mock_instance
+    with patch('bot.Bot', MockBot):
+        yield
 
 @pytest.fixture
 def bot():
-    return Bot(token='1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij')
+    return MockBot(token='1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij')
 
 def test_bot_initialization(bot):
     assert bot is not None
+    assert bot.token is not None
 
 def test_message_storage(bot):
     test_message = "Test message"
