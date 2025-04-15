@@ -73,7 +73,16 @@ jobs:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
+        # First, set the environment variables in Railway
+        curl -X POST \
+          -H "Authorization: Bearer $RAILWAY_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"query\":\"mutation { projectUpdate(id: \\\"$RAILWAY_PROJECT_ID\\\", serviceId: \\\"$RAILWAY_SERVICE_ID\\\", variables: { key: \\\"BOT_TOKEN\\\", value: \\\"$BOT_TOKEN\\\" }) { id } }\"}" \
+          https://backboard.railway.app/graphql/v2
+
+        # Then deploy the new image
         curl -X POST \
           -H "Authorization: Bearer $RAILWAY_TOKEN" \
           -H "Content-Type: application/json" \
