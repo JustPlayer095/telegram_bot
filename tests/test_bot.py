@@ -1,5 +1,7 @@
 import unittest
 from bot import get_main_keyboard, get_messages_keyboard
+import pytest
+from bot import Bot
 
 class TestBot(unittest.TestCase):
     def test_keyboard_creation(self):
@@ -19,6 +21,23 @@ class TestBot(unittest.TestCase):
         # Check that messages keyboard has correct number of buttons
         self.assertEqual(len(messages_kb.keyboard), 1)  # 1 row
         self.assertEqual(len(messages_kb.keyboard[0]), 1)  # 1 button
+
+def test_bot_initialization():
+    bot = Bot()
+    assert bot is not None
+
+def test_message_storage():
+    bot = Bot()
+    test_message = "Test message"
+    bot.store_message(test_message)
+    assert test_message in bot.get_messages()
+
+def test_message_deletion():
+    bot = Bot()
+    test_message = "Test message"
+    bot.store_message(test_message)
+    bot.delete_message(0)
+    assert test_message not in bot.get_messages()
 
 if __name__ == '__main__':
     unittest.main() 
