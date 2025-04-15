@@ -4,8 +4,16 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Bot configuration
+# Get bot token from environment
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+
+if not BOT_TOKEN:
+    # If not in environment, try to read from file
+    try:
+        with open('/app/token.txt', 'r') as f:
+            BOT_TOKEN = f.read().strip()
+    except FileNotFoundError:
+        raise ValueError("BOT_TOKEN not found in environment or token.txt file!")
 
 # Database configuration
 DB_NAME = os.getenv('DB_NAME', 'telegram_bot_db')

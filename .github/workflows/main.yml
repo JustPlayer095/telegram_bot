@@ -67,18 +67,20 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest
-        build-args: |
-          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
     
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
+        # Create a temporary file with the token
+        echo "$BOT_TOKEN" > token.txt
+        
         # Deploy using Railway API
         curl -X POST \
           -H "Authorization: Bearer $RAILWAY_TOKEN" \
           -H "Content-Type: application/json" \
-          -d "{\"projectId\":\"$RAILWAY_PROJECT_ID\",\"serviceId\":\"$RAILWAY_SERVICE_ID\",\"image\":\"${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest\",\"command\":\"python bot.py ${{ secrets.BOT_TOKEN }}\"}" \
+          -d "{\"projectId\":\"$RAILWAY_PROJECT_ID\",\"serviceId\":\"$RAILWAY_SERVICE_ID\",\"image\":\"${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest\",\"command\":\"cp token.txt /app/token.txt && python bot.py\"}" \
           https://backboard.railway.app/graphql/v2 
