@@ -47,7 +47,6 @@ ENV/
 *.sqlite3
 
 # Tests
-tests/
 .pytest_cache/
 
 # GitHub
