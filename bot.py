@@ -5,12 +5,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 import asyncio
 import logging
-from config import BOT_TOKEN
+import os
+from dotenv import load_dotenv
 from database import init_db, save_message, get_user_messages_with_ids, delete_user_messages, delete_specific_message
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
+
+# Get bot token from environment
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN environment variable is not set!")
 
 # Initialize bot and dispatcher
 bot = Bot(token=BOT_TOKEN)

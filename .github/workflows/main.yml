@@ -89,5 +89,8 @@ jobs:
         # Set environment variables
         railway variables set BOT_TOKEN=$BOT_TOKEN
         
+        # Verify the environment variable was set
+        railway variables list
+        
         # Deploy
         railway up --detach 
