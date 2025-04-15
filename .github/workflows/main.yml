@@ -68,8 +68,12 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest
     
+    - name: Install Railway CLI
+      run: |
+        curl -fsSL https://railway.app/install.sh | sh
+    
     - name: Deploy to Railway
-      uses: railwayapp/action@v1
-      with:
-        service: telegram-bot
-        token: ${{ secrets.RAILWAY_TOKEN }} 
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      run: |
+        railway up --detach 
