@@ -3,7 +3,7 @@ import unittest
 from bot import get_main_keyboard, get_messages_keyboard
 import pytest
 from bot import Bot
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 # Set up test environment variables
 os.environ['BOT_TOKEN'] = '123456789:TEST1234567890abcdefghijklmnopqrstuvwxyz'
@@ -27,6 +27,14 @@ class TestBot(unittest.TestCase):
         # Check that messages keyboard has correct number of buttons
         self.assertEqual(len(messages_kb.keyboard), 1)  # 1 row
         self.assertEqual(len(messages_kb.keyboard[0]), 1)  # 1 button
+
+# Mock the Bot class
+@pytest.fixture(autouse=True)
+def mock_bot():
+    with patch('bot.Bot') as mock:
+        mock_instance = MagicMock()
+        mock.return_value = mock_instance
+        yield mock_instance
 
 @pytest.fixture
 def bot():
