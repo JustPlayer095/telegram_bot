@@ -44,7 +44,7 @@ jobs:
       run: |
         python -m pytest tests/ -v
 
-  build-and-deploy:
+  build-and-push:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -66,31 +66,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest
-    
-    - name: Install Railway CLI
-      run: |
-        curl -fsSL https://railway.app/install.sh | sh
-    
-    - name: Configure Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      run: |
-        # Create a temporary .env file
-        echo "BOT_TOKEN=$BOT_TOKEN" > .env
-        
-        # Login to Railway
-        railway login
-        
-        # Link the project
-        railway link ${{ secrets.RAILWAY_PROJECT_ID }}
-        
-        # Set environment variables
-        railway variables set BOT_TOKEN=$BOT_TOKEN
-        
-        # Verify the environment variable was set
-        railway variables list
-        
-        # Deploy
-        railway up --detach 
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest 
