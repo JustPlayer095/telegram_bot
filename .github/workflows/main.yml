@@ -9,6 +9,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
     - uses: actions/checkout@v3
     
@@ -24,6 +38,9 @@ jobs:
         pip install pytest
     
     - name: Run tests
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        DATABASE_URL: postgresql://test:test@localhost:5432/test_db
       run: |
         python -m pytest tests/ -v
 

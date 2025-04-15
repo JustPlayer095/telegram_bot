@@ -1,7 +1,13 @@
+import os
 import unittest
 from bot import get_main_keyboard, get_messages_keyboard
 import pytest
 from bot import Bot
+from unittest.mock import patch
+
+# Set up test environment variables
+os.environ['BOT_TOKEN'] = '123456789:TEST1234567890abcdefghijklmnopqrstuvwxyz'
+os.environ['DATABASE_URL'] = 'postgresql://test:test@localhost:5432/test_db'
 
 class TestBot(unittest.TestCase):
     def test_keyboard_creation(self):
@@ -22,18 +28,19 @@ class TestBot(unittest.TestCase):
         self.assertEqual(len(messages_kb.keyboard), 1)  # 1 row
         self.assertEqual(len(messages_kb.keyboard[0]), 1)  # 1 button
 
-def test_bot_initialization():
-    bot = Bot()
+@pytest.fixture
+def bot():
+    return Bot()
+
+def test_bot_initialization(bot):
     assert bot is not None
 
-def test_message_storage():
-    bot = Bot()
+def test_message_storage(bot):
     test_message = "Test message"
     bot.store_message(test_message)
     assert test_message in bot.get_messages()
 
-def test_message_deletion():
-    bot = Bot()
+def test_message_deletion(bot):
     test_message = "Test message"
     bot.store_message(test_message)
     bot.delete_message(0)
