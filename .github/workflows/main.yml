@@ -74,6 +74,14 @@ jobs:
         RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
       run: |
+        # Verify environment variables in Railway
+        echo "Verifying environment variables in Railway..."
+        curl -X POST \
+          -H "Authorization: Bearer $RAILWAY_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"query\":\"query { project(id: \\\"$RAILWAY_PROJECT_ID\\\") { services { id variables { key value } } } }\"}" \
+          https://backboard.railway.app/graphql/v2
+
         # Deploy the new image
         curl -X POST \
           -H "Authorization: Bearer $RAILWAY_TOKEN" \
