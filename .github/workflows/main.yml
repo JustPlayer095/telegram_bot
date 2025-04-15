@@ -68,19 +68,14 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest
     
-    - name: Install Railway CLI
-      run: |
-        curl -fsSL https://railway.app/install.sh | sh
-    
-    - name: Configure Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: |
-        echo $RAILWAY_TOKEN | railway login
-        railway link ${{ secrets.RAILWAY_PROJECT_ID }}
-    
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+        RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
       run: |
-        railway up --detach 
+        curl -X POST \
+          -H "Authorization: Bearer $RAILWAY_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"projectId\":\"$RAILWAY_PROJECT_ID\",\"serviceId\":\"$RAILWAY_SERVICE_ID\",\"image\":\"${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot:latest\"}" \
+          https://backboard.railway.app/graphql/v2 
